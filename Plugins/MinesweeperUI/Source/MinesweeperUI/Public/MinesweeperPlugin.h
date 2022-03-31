@@ -8,7 +8,7 @@
 class FToolBarBuilder;
 class FMenuBuilder;
 
-class FTestPluginModule : public IModuleInterface
+class FMinesweeperPluginModule : public IModuleInterface
 {
 public:
 

@@ -1,15 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "TestPluginStyle.h"
+#include "MinesweeperStyle.h"
 #include "Styling/SlateStyleRegistry.h"
 #include "Framework/Application/SlateApplication.h"
 #include "Slate/SlateGameResources.h"
 #include "Interfaces/IPluginManager.h"
 
 //I dont understand why this is here and not in the header.
-TSharedPtr< FSlateStyleSet > FTestPluginStyle::StyleInstance = NULL;
+TSharedPtr< FSlateStyleSet > FMinesweeperStyle::StyleInstance = NULL;
 
-void FTestPluginStyle::Initialize()
+void FMinesweeperStyle::Initialize()
 {
 	if (!StyleInstance.IsValid())
 	{
@@ -18,14 +18,14 @@ void FTestPluginStyle::Initialize()
 	}
 }
 
-void FTestPluginStyle::Shutdown()
+void FMinesweeperStyle::Shutdown()
 {
 	FSlateStyleRegistry::UnRegisterSlateStyle(*StyleInstance);
 	ensure(StyleInstance.IsUnique());
 	StyleInstance.Reset();
 }
 
-FName FTestPluginStyle::GetStyleSetName()
+FName FMinesweeperStyle::GetStyleSetName()
 {
 	static FName StyleSetName(TEXT("TestPluginStyle"));
 	return StyleSetName;
@@ -41,7 +41,7 @@ const FVector2D Icon16x16(16.0f, 16.0f);
 const FVector2D Icon20x20(20.0f, 20.0f);
 const FVector2D Icon40x40(40.0f, 40.0f);
 
-TSharedRef< FSlateStyleSet > FTestPluginStyle::Create()
+TSharedRef< FSlateStyleSet > FMinesweeperStyle::Create()
 {
 	TSharedRef< FSlateStyleSet > Style = MakeShareable(new FSlateStyleSet("TestPluginStyle"));
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("TestPlugin")->GetBaseDir() / TEXT("Resources"));
@@ -57,7 +57,7 @@ TSharedRef< FSlateStyleSet > FTestPluginStyle::Create()
 #undef TTF_FONT
 #undef OTF_FONT
 
-void FTestPluginStyle::ReloadTextures()
+void FMinesweeperStyle::ReloadTextures()
 {
 	if (FSlateApplication::IsInitialized())
 	{
@@ -65,7 +65,7 @@ void FTestPluginStyle::ReloadTextures()
 	}
 }
 
-const ISlateStyle& FTestPluginStyle::Get()
+const ISlateStyle& FMinesweeperStyle::Get()
 {
 	return *StyleInstance;
 }

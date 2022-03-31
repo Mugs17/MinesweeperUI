@@ -1,8 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "TestPlugin.h"
-#include "TestPluginStyle.h"
-#include "TestPluginCommands.h"
+#include "MinesweeperPlugin.h"
+#include "MinesweeperStyle.h"
+#include "MinesweeperCommands.h"
 #include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
@@ -14,35 +14,35 @@
 
 static const FName TestPluginTabName("TestPlugin");
 
-#define LOCTEXT_NAMESPACE "FTestPluginModule"
+#define LOCTEXT_NAMESPACE "FMinesweeperPluginModule"
 
-void FTestPluginModule::StartupModule()
+void FMinesweeperPluginModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 	
-	FTestPluginStyle::Initialize();
+	FMinesweeperStyle::Initialize();
 
 	//Runs fine without this line. I'm guessing textures means icon images. 
-	FTestPluginStyle::ReloadTextures();
+	FMinesweeperStyle::ReloadTextures();
 
 	//Registering Commands
-	FTestPluginCommands::Register();
+	FMinesweeperCommands::Register();
 	//Makes FUICommandList into a sharable variable for use with TSharedPtr<>
 	PluginCommands = MakeShareable(new FUICommandList);
 
 	PluginCommands->MapAction(
-		FTestPluginCommands::Get().OpenPluginWindow,
-		FExecuteAction::CreateRaw(this, &FTestPluginModule::PluginButtonClicked),
+		FMinesweeperCommands::Get().OpenPluginWindow,
+		FExecuteAction::CreateRaw(this, &FMinesweeperPluginModule::PluginButtonClicked),
 		FCanExecuteAction());
 
-	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FTestPluginModule::RegisterMenus));
+	UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FMinesweeperPluginModule::RegisterMenus));
 	
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(TestPluginTabName, FOnSpawnTab::CreateRaw(this, &FTestPluginModule::OnSpawnPluginTab))
-		.SetDisplayName(LOCTEXT("FTestPluginTabTitle", "TestPlugin"))
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(TestPluginTabName, FOnSpawnTab::CreateRaw(this, &FMinesweeperPluginModule::OnSpawnPluginTab))
+		.SetDisplayName(LOCTEXT("FMinesweeperTabTitle", "Minesweeper"))
 		.SetMenuType(ETabSpawnerMenuType::Enabled);
 }
 
-void FTestPluginModule::ShutdownModule()
+void FMinesweeperPluginModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -51,14 +51,14 @@ void FTestPluginModule::ShutdownModule()
 	
 	UToolMenus::UnregisterOwner(this);
 
-	FTestPluginStyle::Shutdown();
+	FMinesweeperStyle::Shutdown();
 
-	FTestPluginCommands::Unregister();
+	FMinesweeperCommands::Unregister();
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(TestPluginTabName);
 }
 
-TSharedRef<SDockTab> FTestPluginModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
+TSharedRef<SDockTab> FMinesweeperPluginModule::OnSpawnPluginTab(const FSpawnTabArgs& SpawnTabArgs)
 {
 //	FText WidgetText = FText::Format(
 	//	LOCTEXT("WindowWidgetText", "Addx xCODEXx to {0} in {1} to override this window's contents"),
@@ -73,17 +73,17 @@ TSharedRef<SDockTab> FTestPluginModule::OnSpawnPluginTab(const FSpawnTabArgs& Sp
 		];
 }
 
-void FTestPluginModule::PluginButtonClicked()
+void FMinesweeperPluginModule::PluginButtonClicked()
 {
 	FGlobalTabmanager::Get()->TryInvokeTab(TestPluginTabName);
 }
 
-FReply FTestPluginModule::CreateMinefieldSection()
+FReply FMinesweeperPluginModule::CreateMinefieldSection()
 {
 	return FReply::Handled();
 }
 
-void FTestPluginModule::RegisterMenus()
+void FMinesweeperPluginModule::RegisterMenus()
 {
 	// Owner will be used for cleanup in call to UToolMenus::UnregisterOwner
 	FToolMenuOwnerScoped OwnerScoped(this);
@@ -92,7 +92,7 @@ void FTestPluginModule::RegisterMenus()
 		UToolMenu* Menu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Window");
 		{
 			FToolMenuSection& Section = Menu->FindOrAddSection("WindowLayout");
-			Section.AddMenuEntryWithCommandList(FTestPluginCommands::Get().OpenPluginWindow, PluginCommands);
+			Section.AddMenuEntryWithCommandList(FMinesweeperCommands::Get().OpenPluginWindow, PluginCommands);
 		}
 	}
 
@@ -101,7 +101,7 @@ void FTestPluginModule::RegisterMenus()
 		{
 			FToolMenuSection& Section = ToolbarMenu->FindOrAddSection("Settings");
 			{
-				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FTestPluginCommands::Get().OpenPluginWindow));
+				FToolMenuEntry& Entry = Section.AddEntry(FToolMenuEntry::InitToolBarButton(FMinesweeperCommands::Get().OpenPluginWindow));
 				Entry.SetCommandList(PluginCommands);
 			}
 		}
@@ -111,4 +111,4 @@ void FTestPluginModule::RegisterMenus()
 #undef LOCTEXT_NAMESPACE
 
 //No idea what this does. Maybe it had something to do with missing PCH header seen in old plugin code.
-IMPLEMENT_MODULE(FTestPluginModule, TestPlugin)
+IMPLEMENT_MODULE(FMinesweeperPluginModule, Minesweeper)
