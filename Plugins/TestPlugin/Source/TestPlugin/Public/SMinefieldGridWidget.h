@@ -21,9 +21,9 @@ struct FGridSlotInfo
 
 	TArray<FString> NeighboringGridSlotsToSpreadTo;
 
-	int ColumnNumber;
+	int32 ColumnNumber;
 
-	int RowNumber;
+	int32 RowNumber;
 
 	bool bHasSwitched = false;
 
@@ -41,6 +41,8 @@ public:
 
 	//Construction function for the widget
 	void Construct(const FArguments& InArgs);
+
+private:
 
 	//	TSharedPtr<class SMinefieldStartupWidget> OwningWidget;
 	TSharedPtr<SMinefieldStartupWidget> OwningWidget;
@@ -64,21 +66,21 @@ public:
 	//recrusive function to make sure random number isn't the same as current and neighboring buttons number
 	FString GenerateRandomMines(FString CurrentGridSlotIdentifier);
 
-	TArray<FString> FindNeighboringGridSlotIdentifiers(int Column, int Row);
+	TArray<FString> FindNeighboringGridSlotIdentifiers(int32 Column, int32 Row);
 
-	FString GridSlotNumberToIdentifier(int Column, int Row);
+	FString GridSlotNumberToIdentifier(int32 Column, int32 Row);
 
-	FReply MinefieldGridSlotPressed(int Column, int Row);
+	FReply MinefieldGridSlotPressed(int32 Column, int32 Row);
 
 	//Chooses color of text based on number of neighboring mines
-	FColor PickNumberColor(int Number);
+	FColor PickNumberColor(int32 Number);
 
 
 	FString CurrentGridSlotPressed;
 
 	bool bFirstCheckShowAllChildren = true;
 
-	int SwitchCount;
+	int32 SwitchCount;
 
 	int32 TotalGridSlots;
 

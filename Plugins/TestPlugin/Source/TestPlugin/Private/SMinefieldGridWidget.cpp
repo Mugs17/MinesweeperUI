@@ -27,15 +27,15 @@ void SMinefieldGridWidget::Construct(const FArguments& InArgs)
 	
 }
 
-TArray<FString> SMinefieldGridWidget::FindNeighboringGridSlotIdentifiers(int Column, int Row)
+TArray<FString> SMinefieldGridWidget::FindNeighboringGridSlotIdentifiers(int32 Column, int32 Row)
 {
 		//Making sure minefield slots exist and then setting those neighboring slots for reference
 		TArray<FString> NeighboringSlotIdentifiers;
 		TArray<FString> NeighboringSlotIdentifiersToSpreadTo;
-		int TotalChildrenCount = 0;
+		int32 TotalChildrenCount = 0;
 		// (-1 , 0)
-		int NColumn = Column - 1;
-		int NRow = Row;
+		int32 NColumn = Column - 1;
+		int32 NRow = Row;
 		
 		if (NColumn >= 0)
 		{
@@ -129,159 +129,17 @@ TArray<FString> SMinefieldGridWidget::FindNeighboringGridSlotIdentifiers(int Col
 	 
 }
 
-FString SMinefieldGridWidget::GridSlotNumberToIdentifier(int Column, int Row)
-{
-	//need comma to prevent duplicate grid slot identifiers. e.g. C = 11 R = 7 (Ident = 117), C = 1 R = 17 (Ident = 117);
-	FString StringIdentifier = FString::FromInt(Column) + ", " + FString::FromInt(Row);
-	return StringIdentifier;
-}
-
-
-FString SMinefieldGridWidget::GenerateRandomMines(FString CurrentGridSlotIdentifier)
-{
-	TArray<FString> NeighboringGridSlotIdentifiers;
-	//Need gridslotinfo to get children bc mines can't be in any of the first buttons children either
-	NeighboringGridSlotIdentifiers = GridSlotInfoMapContainer.Find(CurrentGridSlotIdentifier)->NeighboringGridSlots;
-
-	bool bNotSelf = true;
-	bool bNotNeighbor = true;
-
-	//random index for array that holds grid slots
-	int RandomNumber = FMath::RandRange(0, TotalGridSlots - 1);
-
-	//Getting identifier of randomly picked grid slot
-	FString RandomGridSlotIdentifier = ArrayOfGridSlotIdentifiers[RandomNumber];
-
-	if (RandomGridSlotIdentifier == CurrentGridSlotIdentifier)
-	{
-		bNotSelf = false;
-	}
-	
-	for (int i = 0; i < NeighboringGridSlotIdentifiers.Num(); i++)
-	{
-		if (RandomGridSlotIdentifier == NeighboringGridSlotIdentifiers[i])
-		{
-			bNotSelf = false;
-		}
-	}
-
-	if (MineLocationIdentifiers.Num() != 0)
-	{
-		for (int i = 0; i < MineLocationIdentifiers.Num(); i++)
-		{
-			if (RandomGridSlotIdentifier == MineLocationIdentifiers[i])
-			{
-				bNotSelf = false;
-			}
-		}
-	}
-
-	if (bNotSelf && bNotNeighbor)
-	{
-		return RandomGridSlotIdentifier;
-	}
-	else
-	{
-		return GenerateRandomMines(CurrentGridSlotIdentifier);
-	}
-}
-
-FColor SMinefieldGridWidget::PickNumberColor(int Number)
-{
-	FColor Color;
-
-	if (Number == 1)
-	{
-		Color = FColor::Blue;
-	} 
-	else if (Number == 2)
-	{
-		//Green
-		Color = FColor(0, 100, 0);
-	} 
-	else if (Number == 3)
-	{
-		Color = FColor::Red;
-	}
-	else if (Number == 4)
-	{
-		Color = FColor::Purple;
-	}
-	else if (Number == 5)
-	{
-		Color = FColor::Orange;
-	}
-	else if (Number == 6)
-	{
-		Color = FColor::Black;
-	}
-	else if (Number == 7)
-	{
-		Color = FColor::Cyan;
-	}
-	else
-	{
-		Color = FColor::White;
-	}
-	return Color;
-}
-
-
-
-FReply SMinefieldGridWidget::MinefieldGridSlotPressed(int Column, int Row)
-{
-
-	FString CurrentGridSlotIdentifier = GridSlotNumberToIdentifier(Column, Row);
-
-
-	if (!bHasGameStarted)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Game has started"));
-		//Set random Mines
-		for (int i = 0; i < OwningWidget->TotalMines; i++)
-		{
-
-			FString RandomGridSlotIdentifier = GenerateRandomMines(CurrentGridSlotIdentifier);
-
-			//UE_LOG(LogTemp, Error, TEXT("RandomGridSlotIdentifier = %s, CurrentGridSlotIdentifier = %s"), *RandomGridSlotIdentifier, *CurrentGridSlotIdentifier);
-
-			FGridSlotInfo* RandomGridInfo = GridSlotInfoMapContainer.Find(RandomGridSlotIdentifier);
-
-			RandomGridInfo->bIsBomb = true;
-			//Adding mine to list of mines in game
-			MineLocationIdentifiers.Add(RandomGridSlotIdentifier);
-
-		// Will Show all mines
-		/*
-			GridPanelContainer->AddSlot(RandomGridInfo->ColumnNumber, RandomGridInfo->RowNumber)
-				[
-					SNew(SImage)
-					.ColorAndOpacity(FColor::Red)
-				];
-		*/
-		}
-
-		bHasGameStarted = true;
-	}
-
-	FindMines(CurrentGridSlotIdentifier);
-
-
-
-	return FReply::Handled();
-}
 
 FReply SMinefieldGridWidget::CreateMinefieldBaseGrid()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("MinefieldHeight = %f, MinefieldWidth = %f"), OwningWidget->MinefieldHeight, OwningWidget->MinefieldWidth);
 	//Creates buttons for every slot in minesweeper
 	if (OwningWidget != nullptr)
 	{
 		TotalGridSlots = OwningWidget->MinefieldHeight * OwningWidget->MinefieldWidth;
 
-		for (int i = 0; i < OwningWidget->MinefieldHeight; i++)
+		for (int32 i = 0; i < OwningWidget->MinefieldHeight; i++)
 		{
-			for (int j = 0; j < OwningWidget->MinefieldWidth; j++)
+			for (int32 j = 0; j < OwningWidget->MinefieldWidth; j++)
 			{
 
 				//Creating Grid Slot information struct
@@ -313,9 +171,94 @@ FReply SMinefieldGridWidget::CreateMinefieldBaseGrid()
 	return FReply::Handled();
 }
 
+FReply SMinefieldGridWidget::MinefieldGridSlotPressed(int32 Column, int32 Row)
+{
+
+	FString CurrentGridSlotIdentifier = GridSlotNumberToIdentifier(Column, Row);
+
+
+	if (!bHasGameStarted)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Game has started"));
+		//Set random Mines
+		for (int32 i = 0; i < OwningWidget->TotalMines; i++)
+		{
+
+			FString RandomGridSlotIdentifier = GenerateRandomMines(CurrentGridSlotIdentifier);
+
+			//UE_LOG(LogTemp, Error, TEXT("RandomGridSlotIdentifier = %s, CurrentGridSlotIdentifier = %s"), *RandomGridSlotIdentifier, *CurrentGridSlotIdentifier);
+
+			FGridSlotInfo* RandomGridInfo = GridSlotInfoMapContainer.Find(RandomGridSlotIdentifier);
+
+			RandomGridInfo->bIsBomb = true;
+			//Adding mine to list of mines in game
+			MineLocationIdentifiers.Add(RandomGridSlotIdentifier);
+
+		}
+
+		bHasGameStarted = true;
+	}
+
+	FindMines(CurrentGridSlotIdentifier);
+
+
+
+	return FReply::Handled();
+}
+
+FString SMinefieldGridWidget::GenerateRandomMines(FString CurrentGridSlotIdentifier)
+{
+	TArray<FString> NeighboringGridSlotIdentifiers;
+	//Need gridslotinfo to get children bc mines can't be in any of the first buttons children either
+	NeighboringGridSlotIdentifiers = GridSlotInfoMapContainer.Find(CurrentGridSlotIdentifier)->NeighboringGridSlots;
+
+	bool bNotSelf = true;
+	bool bNotNeighbor = true;
+
+	//random index for array that holds grid slots
+	int32 RandomNumber = FMath::RandRange(0, TotalGridSlots - 1);
+
+	//Getting identifier of randomly picked grid slot
+	FString RandomGridSlotIdentifier = ArrayOfGridSlotIdentifiers[RandomNumber];
+
+	if (RandomGridSlotIdentifier == CurrentGridSlotIdentifier)
+	{
+		bNotSelf = false;
+	}
+
+	for (int32 i = 0; i < NeighboringGridSlotIdentifiers.Num(); i++)
+	{
+		if (RandomGridSlotIdentifier == NeighboringGridSlotIdentifiers[i])
+		{
+			bNotSelf = false;
+		}
+	}
+
+	if (MineLocationIdentifiers.Num() != 0)
+	{
+		for (int i = 0; i < MineLocationIdentifiers.Num(); i++)
+		{
+			if (RandomGridSlotIdentifier == MineLocationIdentifiers[i])
+			{
+				bNotSelf = false;
+			}
+		}
+	}
+
+	if (bNotSelf && bNotNeighbor)
+	{
+		return RandomGridSlotIdentifier;
+	}
+	else
+	{
+		return GenerateRandomMines(CurrentGridSlotIdentifier);
+	}
+}
+
 void SMinefieldGridWidget::FindMines(FString SlotIdentifier)
 {
 	FGridSlotInfo* CurrentGridSlotInfo = GridSlotInfoMapContainer.Find(SlotIdentifier);
+
 
 	//Turn off functionality if spot already visible
 	if (CurrentGridSlotInfo->bHasSwitched == false)
@@ -325,11 +268,11 @@ void SMinefieldGridWidget::FindMines(FString SlotIdentifier)
 			TArray<FString> NeighboringGridSlotIdentifiers = CurrentGridSlotInfo->NeighboringGridSlots;
 			TArray<FString> NeighboringGridSlotIdentifiersToSpreadTo = CurrentGridSlotInfo->NeighboringGridSlotsToSpreadTo;
 
-			int NeighboringMineCount = 0;
+			int32 NeighboringMineCount = 0;
 
 			bool bIsNextToMine = false;
 
-			for (int i = 0; i < NeighboringGridSlotIdentifiers.Num(); i++)
+			for (int32 i = 0; i < NeighboringGridSlotIdentifiers.Num(); i++)
 			{
 				FGridSlotInfo* CurrentNeighboringGridSlotInfo = GridSlotInfoMapContainer.Find(NeighboringGridSlotIdentifiers[i]);
 
@@ -439,6 +382,65 @@ void SMinefieldGridWidget::FindMines(FString SlotIdentifier)
 	}
 	
 }
+
+FString SMinefieldGridWidget::GridSlotNumberToIdentifier(int32 Column, int32 Row)
+{
+	//need comma to prevent duplicate grid slot identifiers. e.g. C = 11 R = 7 (Ident = 117), C = 1 R = 17 (Ident = 117);
+	FString StringIdentifier = FString::FromInt(Column) + ", " + FString::FromInt(Row);
+	return StringIdentifier;
+}
+
+FColor SMinefieldGridWidget::PickNumberColor(int32 Number)
+{
+	FColor Color;
+
+	switch (Number)
+	{
+	case 1:
+
+		Color = FColor::Blue;
+		break;
+
+	case 2:
+
+		//Green
+		Color = FColor(0, 100, 0);
+		break;
+
+	case 3:
+
+		Color = FColor::Red;
+		break;
+
+	case 4:
+
+		Color = FColor::Purple;
+		break;
+
+	case 5:
+
+		Color = FColor::Orange;
+		break;
+
+	case 6:
+
+		Color = FColor::Black;
+		break;
+
+	case 7:
+
+		Color = FColor::Cyan;
+		break;
+
+	case 8:
+
+		Color = FColor::White;
+		break;
+	}
+
+	return Color;
+}
+
 
 
 #undef LOCTEXT_NAMESPACE

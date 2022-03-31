@@ -18,26 +18,33 @@ public:
 
 	SLATE_END_ARGS()
 
+	//Construction function for the widget
+	void Construct(const FArguments& InArgs);
+
+	TSharedPtr<SOverlay> GameResultTextContainer;
+	TSharedPtr<STextBlock> GameOverTextBlock;
+	TSharedPtr<STextBlock> GameWonTextBlock;
+
+	FMargin VerticalBoxPadding;
+
+	int32 MinefieldHeight = 15;
+
+	int32 MinefieldWidth = 15;
+
+	int32 TotalMines = 50;
+
+	bool bGameIsOver;
+
+private:
+
 	//Creates Minesweeper game
 	FReply CreateMinefieldSection();
 
 	FReply CreateMinefieldMenu();
 
-	int MinefieldHeight = 15;
-
-	int MinefieldWidth = 15;
-
-	int TotalMines = 50;
-
-	//Construction function for the widget
-	void Construct(const FArguments& InArgs);
-
-	bool bGameIsOver;
-
-	FMargin VerticalBoxPadding;
 
 	//Makes sure player input is within required range
-	int CheckEditableBoxText(const FText& Text);
+	int32 CheckEditableBoxText(const FText& Text);
 
 	//Setting minefield grid column number
 	void EditableBoxTextHeight(const FText& Text);
@@ -56,7 +63,7 @@ public:
 
 	void ChangeDifficulty(ECheckBoxState State);
 
-	int Difficulty = 5;
+	int32 Difficulty = 5;
 
 	//Needed to dynamically update hint text
 	TSharedPtr<SEditableTextBox> EditableTextTotalMinesContainer;
@@ -69,10 +76,6 @@ public:
 
 	//Container for the minesweeper game widget
 	TSharedPtr<SMinefieldGridWidget> MinefieldGridWidgetContainer;
-
-	TSharedPtr<SOverlay> GameResultTextContainer;
-	TSharedPtr<STextBlock> GameOverTextBlock;
-	TSharedPtr<STextBlock> GameWonTextBlock;
 
 //	TWeakObjectPtr<SMinefieldStartupWidget> SelfReference;
 	//The module that created this widget

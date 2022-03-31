@@ -14,102 +14,10 @@ void SMinefieldStartupWidget::Construct(const FArguments& InArgs)
 
 	CreateMinefieldMenu();
 	
-
 }
-
-void SMinefieldStartupWidget::EditableBoxTextHeight(const FText& Text)
-{
-	MinefieldHeight = CheckEditableBoxText(Text);
-	
-	UpdateTotalMineHintText();
-
-	ResetTotalMines(false);
-
-}
-
-void SMinefieldStartupWidget::EditableBoxTextWidth(const FText& Text)
-{
-	MinefieldWidth = CheckEditableBoxText(Text);
-
-	UpdateTotalMineHintText();
-
-	ResetTotalMines(false);
-}
-
-void SMinefieldStartupWidget::EditableBoxTextTotalMines(const FText& Text)
-{
-	//Duplication of code needed here because I want a different max value for TotalMines
-	if (Text.IsNumeric())
-
-	{
-		FString String = Text.ToString();
-		int InputedNumber = FCString::Atoi(*String);
-
-		//Making sure total mines never goes over a game breaking amount
-		int MaxMines = (MinefieldHeight * MinefieldWidth * .8) - 9;
-
-		if (InputedNumber && InputedNumber <= MaxMines && InputedNumber >= 5)
-		{
-			TotalMines = FCString::Atoi(*String);
-			UE_LOG(LogTemp, Warning, TEXT("Total Mines: %d"), TotalMines);
-		}
-		else
-		{
-			//Resetting to default number
-			ResetTotalMines(true);
-		}
-	}
-	else
-	{
-		//Resetting to default number
-		ResetTotalMines(true);
-	}
-}
-
-void SMinefieldStartupWidget::UpdateTotalMineHintText()
-{
-	//Making sure total mines never goes over a game breaking amount
-	int MaxMines = (MinefieldHeight * MinefieldWidth * .8) - 9;
-
-	FString HintText = "Min: 5, Max: " + FString::FromInt(MaxMines);
-
-	//Dynamically Updating TotalMine hint text
-	EditableTextTotalMinesContainer->SetHintText(FText::FromString(HintText));
-}
-
-void SMinefieldStartupWidget::ResetTotalMines(bool bCalledFromTotalMines)
-{
-	//Clearing total mine text if it isn't current input field
-	if (!bCalledFromTotalMines)
-	{
-		EditableTextTotalMinesContainer->SetText(FText::FromString(""));
-	}
-	
-	TotalMines = (MinefieldHeight * MinefieldWidth) / Difficulty;
-}
-
-void SMinefieldStartupWidget::ChangeDifficulty(ECheckBoxState State)
-{
-	//Change to hard
-	if (State == ECheckBoxState::Checked)
-	{
-		Difficulty = 3;
-	}
-	//change to easy
-	else if (State == ECheckBoxState::Unchecked)
-	{
-		Difficulty = 5;
-	}
-
-	//Clearing total mine text when player selects a difficulty setting
-	EditableTextTotalMinesContainer->SetText(FText::FromString(""));
-}
-
 
 FReply  SMinefieldStartupWidget::CreateMinefieldSection()
 {
-	//UE_LOG(LogTemp, Error, TEXT("Mine Height: %f, Mine Width: %f, TotalMines: %f"), MinefieldHeight, MinefieldWidth, TotalMines);
-
 	//Make GameText invisible
 	GameOverTextBlock->SetVisibility(EVisibility::Collapsed);
 	GameWonTextBlock->SetVisibility(EVisibility::Collapsed);
@@ -134,8 +42,6 @@ FReply  SMinefieldStartupWidget::CreateMinefieldSection()
 				SAssignNew(MinefieldGridWidgetContainer, SMinefieldGridWidget).OwningWidget(SharedThis(this))
 			];
 	}
-		
-
 		
 	return FReply::Handled();
 }
@@ -345,15 +251,15 @@ FReply SMinefieldStartupWidget::CreateMinefieldMenu()
 }
 
 
-int SMinefieldStartupWidget::CheckEditableBoxText(const FText& Text)
+int32 SMinefieldStartupWidget::CheckEditableBoxText(const FText& Text)
 {
 	//Checking player input to make sure it is in required range
 	FString String = Text.ToString();
-	int MaxGridLines = 50;
+	int32 MaxGridLines = 50;
 
 	if (String.IsNumeric())
 	{
-		int InputedNumber = FCString::Atoi(*String);
+		int32 InputedNumber = FCString::Atoi(*String);
 		if (InputedNumber && InputedNumber <= MaxGridLines && InputedNumber >= 5)
 		{
 			return FCString::Atoi(*String);
@@ -371,6 +277,99 @@ int SMinefieldStartupWidget::CheckEditableBoxText(const FText& Text)
 	}
 
 }
+
+void SMinefieldStartupWidget::EditableBoxTextHeight(const FText& Text)
+{
+	MinefieldHeight = CheckEditableBoxText(Text);
+
+	UpdateTotalMineHintText();
+
+	ResetTotalMines(false);
+
+}
+
+void SMinefieldStartupWidget::EditableBoxTextWidth(const FText& Text)
+{
+	MinefieldWidth = CheckEditableBoxText(Text);
+
+	UpdateTotalMineHintText();
+
+	ResetTotalMines(false);
+}
+
+void SMinefieldStartupWidget::EditableBoxTextTotalMines(const FText& Text)
+{
+	//Duplication of code needed here because I want a different max value for TotalMines
+	if (Text.IsNumeric())
+
+	{
+		FString String = Text.ToString();
+		int InputedNumber = FCString::Atoi(*String);
+
+		//Making sure total mines never goes over a game breaking amount
+		int MaxMines = (MinefieldHeight * MinefieldWidth * .8) - 9;
+
+		if (InputedNumber && InputedNumber <= MaxMines && InputedNumber >= 5)
+		{
+			TotalMines = FCString::Atoi(*String);
+			UE_LOG(LogTemp, Warning, TEXT("Total Mines: %d"), TotalMines);
+		}
+		else
+		{
+			//Resetting to default number
+			ResetTotalMines(true);
+		}
+	}
+	else
+	{
+		//Resetting to default number
+		ResetTotalMines(true);
+	}
+}
+
+void SMinefieldStartupWidget::UpdateTotalMineHintText()
+{
+	//Making sure total mines never goes over a game breaking amount
+	int MaxMines = (MinefieldHeight * MinefieldWidth * .8) - 9;
+
+	FString HintText = "Min: 5, Max: " + FString::FromInt(MaxMines);
+
+	//Dynamically Updating TotalMine hint text
+	EditableTextTotalMinesContainer->SetHintText(FText::FromString(HintText));
+}
+
+void SMinefieldStartupWidget::ResetTotalMines(bool bCalledFromTotalMines)
+{
+	//Clearing total mine text if it isn't current input field
+	if (!bCalledFromTotalMines)
+	{
+		EditableTextTotalMinesContainer->SetText(FText::FromString(""));
+	}
+
+	TotalMines = (MinefieldHeight * MinefieldWidth) / Difficulty;
+}
+
+void SMinefieldStartupWidget::ChangeDifficulty(ECheckBoxState State)
+{
+	switch (State)
+	{
+	//Change to hard
+	case ECheckBoxState::Checked:
+
+			Difficulty = 3;
+			break;
+
+	//Change to easy
+	case ECheckBoxState::Unchecked:
+
+			Difficulty = 5;
+			break;
+	}
+
+	//Clearing total mine text when player selects a difficulty setting
+	EditableTextTotalMinesContainer->SetText(FText::FromString(""));
+}
+
 
 
 #undef LOCTEXT_NAMESPACE
